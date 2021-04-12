@@ -3,9 +3,9 @@ package part3
 import part2._
 
 object EitherCalculator {
-  def eval(expr: Expr): Either[String, Double] = {
-    ???
-  }
+//  def eval(expr: Expr): Either[String, Double] = {
+//    ???
+//  }
 }
 
 object Exercise21EitherCalculator {

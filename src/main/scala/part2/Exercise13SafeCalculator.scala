@@ -15,9 +15,9 @@ sealed abstract class Result
 // Step 2. Implement eval below:
 
 object SafeCalculator {
-  def eval(calc: Expr): Result = {
-    ???
-  }
+//  def eval(calc: Expr): Result = {
+//    ???
+//  }
 }
 
 object Exercise13SafeCalculator {

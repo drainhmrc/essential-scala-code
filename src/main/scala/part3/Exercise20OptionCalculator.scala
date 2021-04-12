@@ -3,9 +3,9 @@ package part3
 import part2._
 
 object OptionCalculator {
-  def eval(calc: Expr): Option[Double] = {
-    ???
-  }
+//  def eval(calc: Expr): Option[Double] = {
+//    ???
+//  }
 }
 
 object Exercise20OptionCalculator {
