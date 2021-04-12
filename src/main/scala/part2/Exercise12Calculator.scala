@@ -9,7 +9,9 @@ import java.io.Serializable
 
 sealed abstract class Expr extends Product with Serializable {
   def stringify : String
+
 }
+
 
 // Handle the following types of equation:
 // - addition
@@ -62,14 +64,32 @@ object Calculator {
 }
 
 object IntCalculator {
-  def eval(calc: Expr): Int = {
+
+
+  def operate(d: Expr, d2: Expr)(f: (Int, Int)=> Int )= {
+    for {
+      a <- eval(d)
+      b <- eval(d2)
+    } yield f(a,b)
+  }
+
+  def eval(calc: Expr): Either[String ,Int] = {
     calc match {
-      case SquareRoot(d) => Math.sqrt(eval(d)).round.toInt
-      case Division(d, d2) => eval(d) / eval(d2)
-      case Multiplication(d, d2) => eval(d) * eval(d2)
-      case Addition(d, d2) => eval(d) + eval(d2)
-      case Subtraction(d, d2) => eval(d) - eval(d2)
-      case Constant(d) => d.round.toInt
+      case SquareRoot(d) => eval(d).map(Math.sqrt(_).round.toInt)
+      case Division(d, d2) =>
+          for {
+            a <- eval(d)
+            b <- eval(d2)
+            sanitisedB <- Either.cond(b != 0, b, "DivideByZero")
+          } yield a / sanitisedB
+
+      case Multiplication(d, d2) => operate(d, d2)(_ * _)
+
+      case Addition(d, d2) =>  operate(d , d2)(_ + _)
+
+      case Subtraction(d, d2) => operate(d , d2)(_ - _)
+
+      case Constant(d) => Right(d.round.toInt)
       }
   }
 }
@@ -82,7 +102,10 @@ object IntCalculator {
 // ----------------------------------------------
 
 object Expr {
-   def pythag(a: Double, b: Double): Expr = {
+
+
+
+  def pythag(a: Double, b: Double): Expr = {
      SquareRoot(Addition(Multiplication(Constant(a), Constant(a)),Multiplication(Constant(a), Constant(a))))
    }
 
@@ -97,6 +120,7 @@ object Expr {
 object Exercise11Calculator {
    val calc1 = Addition(Constant(1.1), Multiplication(Constant(2.2), Constant(3.3)))
    val calc2 = Addition(Multiplication(Constant(1.1), Constant(2.2)), Constant(3.3))
+   val calc3 = Division(Constant(1), Constant(0))
 
   def main(args: Array[String]): Unit = {
     println("stringify")
@@ -122,5 +146,10 @@ object Exercise11Calculator {
     println(Expr.factorial(6).stringify)
     println(Calculator.eval(Expr.factorial(6)))
     println(IntCalculator.eval(Expr.factorial(6)))
+
+    println("divide by zero")
+    println(calc3.stringify)
+    println(IntCalculator.eval(calc3))
+    println(IntCalculator.eval(calc2))
   }
 }
